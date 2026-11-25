@@ -8,7 +8,7 @@ Small Python tools I build while learning offensive security. Each tool lives in
 
 | Tool | What it does | Status |
 |---|---|---|
-| [portscan](portscan/README.md) | TCP connect scan of a target host (ports 1 to 1024) | Done |
-| Banner grabber | Connects to open ports and reads service banners | Planned |
+| [portscan](portscan/README.md) | TCP scanner with service names, banner grabbing and a custom port range | Done |
+| Banner grabber | Built into portscan (reads service banners from open ports) | Done |
 
 *Tools are added as I learn the concepts behind them.*
