@@ -59,14 +59,16 @@ def grab_banner(target, port):
 def scan_port(port):
     if not check_port(target, port):
         return None
-    return port, get_service(port), grab_banner(target, port)
+    return port, grab_banner(target, port)
 
 with ThreadPoolExecutor(max_workers=THREADS) as pool:
     results = list(pool.map(scan_port, range(start, end + 1)))
 
+# Service names are looked up here, one at a time, because
+# socket.getservbyport is not safe to call from many threads at once.
 for item in results:
     if item is not None:
-        port, service, banner = item
-        print(f"Port {port} is open ({service})")
+        port, banner = item
+        print(f"Port {port} is open ({get_service(port)})")
         if banner:
             print(f"    banner: {banner}")
