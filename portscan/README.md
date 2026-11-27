@@ -76,3 +76,14 @@ In my lab the mail server waited 10 seconds before sending its greeting, so shor
 - Never hide errors when debugging: printing the real error found the problem in minutes.
 - Threads help when a program spends its time waiting, and a pool of workers is better than one thread per task.
 - Terminals can be garbled by binary data, so output from the network should be cleaned before printing.
+- 
+## A bug I found and fixed
+
+In the first threaded version, some service names were wrong: port 21 showed `telnet` and port 25 showed `ssh`. The single-threaded version never did this.
+
+- **Cause:** `socket.getservbyport` is not safe to call from many threads at once. It uses one shared slot for its answer, so threads overwrote each other's results (a race condition).
+- **How I confirmed it:** I saved the output to a file and used `grep` on specific lines. The file itself had the wrong labels, so it was not a display glitch. (My first guess was a screen glitch, and it was wrong.)
+- **Fix:** the threads now only do the slow network work. Service names are looked up one at a time, in the main thread, after all threads finish.
+- **Result:** after the fix, ports 21, 25, 513 and 514 correctly showed `ftp`, `smtp`, `login` and `shell`.
+
+**Lesson:** when many threads share something, check whether it is safe to share. And when a result looks wrong, test your guess before trusting it.
